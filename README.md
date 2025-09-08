@@ -108,4 +108,4 @@ All operations are thread-safe using:
 
 ---
 
-*Inspired by Vic Ricker at New Pig Corporation*
+The concept of a configuration management tool was shown to me by a colleague at New pig. This isn't the same as his tool, but it takes inspiration - Thanks Vic. 
