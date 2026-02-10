@@ -4,14 +4,11 @@ import com.github.configmanager.config.Configuration;
 import com.github.configmanager.config.BasicConfiguration;
 import com.github.configmanager.config.CustomConfiguration;
 import com.github.configmanager.listeners.ConfigurationChangeListener;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
-import java.util.logging.Logger;
 
 public class ConfigManager {
-    private static final Logger LOGGER = Logger.getLogger(ConfigManager.class.getName());
     private static final ExecutorService executor = Executors.newCachedThreadPool(r -> {
         Thread thread = new Thread(r);
         thread.setName("ConfigManager-Worker-" + thread.getId());
@@ -29,13 +26,12 @@ public class ConfigManager {
 
         // Register shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            LOGGER.info("Shutting down ConfigManager");
             shutdown();
         }));
     }
 
     /**
-     * Get a snapshot of the current configuration as an immutable map.
+     * Get a snapshot of the current configuration.
      */
     public static Map<String, String> getConfigurationMap() {
         return currentConfiguration.toMap();
@@ -107,7 +103,6 @@ public class ConfigManager {
             throw new IllegalArgumentException("Configuration cannot be null");
         }
         currentConfiguration = configuration;
-        LOGGER.info(() -> "Configuration set to: " + configuration.getClass().getSimpleName());
     }
 
     /**
@@ -166,14 +161,9 @@ public class ConfigManager {
             } else if (type == Boolean.class) {
                 return (T) Boolean.valueOf(value);
             } else {
-                LOGGER.warning(() -> "Unsupported type: " + type.getName() + ", returning default");
                 return defaultValue;
             }
         } catch (NumberFormatException e) {
-            LOGGER.warning(() -> String.format(
-                    "Failed to parse '%s' as %s for key '%s', returning default",
-                    value, type.getSimpleName(), key
-            ));
             return defaultValue;
         }
     }
@@ -184,9 +174,6 @@ public class ConfigManager {
     public static void refresh() {
         if (currentConfiguration instanceof CustomConfiguration) {
             ((CustomConfiguration) currentConfiguration).refresh();
-            LOGGER.info("Configuration refreshed");
-        } else {
-            LOGGER.warning("Refresh is only supported for CustomConfiguration");
         }
     }
 
@@ -230,8 +217,39 @@ public class ConfigManager {
     }
 
     /**
+     * Add a configuration change listener.
+     */
+    public static void addConfigurationChangeListener(ConfigurationChangeListener listener) {
+        if (listener != null) {
+            listeners.add(listener);
+        }
+    }
+
+    /**
+     * Remove a configuration change listener.
+     */
+    public static void removeConfigurationChangeListener(ConfigurationChangeListener listener) {
+        if (listener != null) {
+            listeners.remove(listener);
+        }
+    }
+
+    /**
+     * Clear all configuration change listeners.
+     */
+    public static void clearConfigurationChangeListeners() {
+        listeners.clear();
+    }
+
+    /**
+     * Get the number of registered listeners.
+     */
+    public static int getListenerCount() {
+        return listeners.size();
+    }
+
+    /**
      * Shutdown the ConfigManager and release resources.
-     * After calling this method, no more configuration changes can be made.
      */
     public static void shutdown() {
         if (isShutdown) {
@@ -242,18 +260,15 @@ public class ConfigManager {
         executor.shutdown();
         try {
             if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
-                LOGGER.warning("Executor did not terminate in time, forcing shutdown");
                 executor.shutdownNow();
                 if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
-                    LOGGER.severe("Executor did not terminate after forced shutdown");
+                    System.err.println("Executor did not terminate");
                 }
             }
         } catch (InterruptedException e) {
-            LOGGER.warning("Interrupted during shutdown, forcing shutdown");
             executor.shutdownNow();
             Thread.currentThread().interrupt();
         }
-        LOGGER.info("ConfigManager shutdown complete");
     }
 
     /**
@@ -261,41 +276,6 @@ public class ConfigManager {
      */
     public static boolean isShutdown() {
         return isShutdown;
-    }
-
-    /**
-     * Add a configuration change listener.
-     */
-    public static void addConfigurationChangeListener(ConfigurationChangeListener listener) {
-        if (listener != null) {
-            listeners.add(listener);
-            LOGGER.fine("Added configuration change listener");
-        }
-    }
-
-    /**
-     * Remove a configuration change listener.
-     */
-    public static void removeConfigurationChangeListener(ConfigurationChangeListener listener) {
-        if (listener != null) {
-            listeners.remove(listener);
-            LOGGER.fine("Removed configuration change listener");
-        }
-    }
-
-    /**
-     * Clear all configuration change listeners.
-     */
-    public static void clearConfigurationChangeListeners() {
-        listeners.clear();
-        LOGGER.fine("Cleared all configuration change listeners");
-    }
-
-    /**
-     * Get the number of registered listeners.
-     */
-    public static int getListenerCount() {
-        return listeners.size();
     }
 
     private static void checkNotShutdown() {

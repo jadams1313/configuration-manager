@@ -6,8 +6,10 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ConfigurationValue {
+public @interface ConfigValue {
     String key() default "";
     String defaultValue() default "";
     boolean useFieldNameMapping() default true;
 }
+
+

@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public interface Configuration {
 
-    public Map<String, String> toMap();
+    Map<String, String> toMap();
 
     default Map<String, String> getProperties() {
         final Map<String, String> configMap = new ConcurrentHashMap<>();
