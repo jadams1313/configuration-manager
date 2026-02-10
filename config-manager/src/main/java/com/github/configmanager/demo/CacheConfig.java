@@ -1,4 +1,4 @@
-package com.github.configmanager.examples;
+package com.github.configmanager.demo;
 
 import com.github.configmanager.annotations.ConfigValue;
 

@@ -1,4 +1,4 @@
-package com.github.configmanager.examples;
+package com.github.configmanager.demo;
 
 import com.github.configmanager.ConfigManager;
 import com.github.configmanager.config.BasicConfiguration;
@@ -6,7 +6,6 @@ import com.github.configmanager.config.CustomConfiguration;
 import com.github.configmanager.listeners.ConfigurationChangeListener;
 
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Examples demonstrating how to use the Configuration Manager.
@@ -47,7 +46,6 @@ public class Demo {
 
         // Create custom configuration with annotation scanning
         CustomConfiguration config = ConfigManager.createCustomConfiguration(
-                DatabaseConfig.class,
                 CacheConfig.class
         );
 
@@ -197,7 +195,7 @@ public class Demo {
         System.out.println("\n=== Example 9: Configuration Refresh ===");
 
         CustomConfiguration config = ConfigManager.createCustomConfiguration(
-                DatabaseConfig.class
+                CacheConfig.class
         );
         ConfigManager.setConfiguration(config);
 

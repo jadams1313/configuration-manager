@@ -30,7 +30,7 @@ public class ConfigurationAlteration {
     }
 
     public ConfigurationAlteration setConfigValue(String key, String value) {
-        if (key == null || key.isEmpty()) {
+        if (key == null || value == null ) {
             throw new IllegalArgumentException("Config key cannot be null or empty");
         }
         pendingChanges.put(key, value);

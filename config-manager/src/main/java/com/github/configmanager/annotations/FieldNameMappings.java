@@ -4,7 +4,7 @@ import javax.naming.Name;
 
 public class FieldNameMappings implements NameMappings {
     @Override
-    public String nameMapping(String name) {
+    public String snakeCaseNameMapping(String name) {
         if (name == null || name.isEmpty()) {
             return name;
         }

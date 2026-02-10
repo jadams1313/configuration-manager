@@ -71,7 +71,7 @@ public class CustomConfiguration implements Configuration {
         }
 
         if (annotation.useFieldNameMapping()) {
-            return fieldNameMapper.nameMapping(field.getName());
+            return fieldNameMapper.snakeCaseNameMapping(field.getName());
         }
 
         return field.getName();

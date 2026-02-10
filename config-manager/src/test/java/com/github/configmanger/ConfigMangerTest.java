@@ -1,15 +1,14 @@
-package com.github.configmanager;
+package com.github.configmanger;
 
+import com.github.configmanager.ConfigManager;
 import com.github.configmanager.annotations.ConfigValue;
 import com.github.configmanager.config.BasicConfiguration;
 import com.github.configmanager.config.CustomConfiguration;
 import com.github.configmanager.listeners.ConfigurationChangeListener;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -228,7 +227,7 @@ class ConfigManagerTest {
 
     @Test
     void testNullValueHandling() {
-        assertDoesNotThrow(() -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             ConfigManager.alterConfiguration()
                     .setConfigValue("null_key", null)
                     .apply()
